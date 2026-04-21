@@ -32,6 +32,7 @@
     "@nestjs/jwt": "^10.0.3",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/throttler": "^6.5.0",
     "@nestjs/typeorm": "^9.0.1",
     "@types/bcrypt": "^5.0.0",
     "@types/bluebird": "^3.5.38",

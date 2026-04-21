@@ -6,6 +6,17 @@ const envFilePath: string = getEnvPath(resolve(__dirname, '..', 'common/envs'));
 
 config({ path: envFilePath });
 
+// S1: Determina si estamos en producción
+const isProduction = process.env.NODE_ENV === 'production';
+
+// S2: Helper para requerir vars solo en producción
+const requireInProduction = (key: string, fallback: string): string => {
+  if (isProduction && !process.env[key]) {
+    throw new Error(`${key} environment variable is required in production`);
+  }
+  return process.env[key] || fallback;
+};
+
 export const configuration = () => ({
   port: parseInt(process.env.PORT, 10) || 3000,
   baseUrl: process.env.BASE_URL || 'http://localhost:3000',
@@ -18,10 +29,13 @@ export const configuration = () => ({
     entities: process.env.DATABASE_ENTITIES || 'dist/**/*.entity.{ts,js}',
   },
   jwt: {
-    secret: process.env.JWT_SECRET || 'secret',
+    // S1: En producción requiere JWT_SECRET, en dev usa fallback seguro
+    secret: requireInProduction('JWT_SECRET', 'dev-secret-not-for-production'),
   },
   adminUser: {
-    email: process.env.ADMIN_EMAIL || 'admin@admin.com',
-    password: process.env.ADMIN_PASSWORD || '12345678',
+    // S2: En producción requiere ADMIN_EMAIL, en dev usa default
+    email: requireInProduction('ADMIN_EMAIL', 'admin@admin.com'),
+    // S2: En producción requiere ADMIN_PASSWORD, en dev usa default
+    password: requireInProduction('ADMIN_PASSWORD', '12345678'),
   },
 });
