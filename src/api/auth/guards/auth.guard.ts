@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       if (error instanceof TokenExpiredError)
         throw new UnauthorizedException(errorMessages.auth.expiredToken);
-      throw new UnauthorizedException(errorMessages.auth.invlidToken);
+      throw new UnauthorizedException(errorMessages.auth.invalidToken);
     }
   }
 }
