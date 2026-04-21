@@ -659,4 +659,55 @@ El objetivo es **identificar problemas estructurales mínimos** y crear una base
 
 ---
 
+## 7. Issues Adicionales del Análisis Profundo
+
+> **Fecha:** 21/04/2026  
+> Estas issues fueron detectadas mediante análisis automático del codebase y complementan las encontradas en la evaluación inicial.
+
+### 7.1 Seguridad (CRITICAL)
+
+| #   | Issue                                           | Archivo               | Corrección                                     |
+| --- | ----------------------------------------------- | --------------------- | ---------------------------------------------- |
+| S1  | JWT SECRET hardcodeado fallback como `'secret'` | `src/config/index.ts` | Lanzar error si no está definido en producción |
+| S2  | Admin credentials con defaults en código        | `src/config/index.ts` | Remover defaults, solo leer de environment     |
+
+### 7.2 Alto Impacto (HIGH)
+
+| #   | Issue                                            | Archivo            | Corrección                            |
+| --- | ------------------------------------------------ | ------------------ | ------------------------------------- |
+| H1  | No rate limiting en `/login` y `/register`       | auth.controller.ts | Implementar `@nestjs/throttler`       |
+| H2  | Password sin validación mínima                   | user.dto.ts        | Agregar `@MinLength(8)`, `@Matches()` |
+| H3  | AuthGuard hace lookup de usuario en cada request | auth.guard.ts      | Incluir roles en JWT, cachear usuario |
+| H4  | `createProduct` ignora datos del DTO             | product.service.ts | Pasar todos los datos del DTO         |
+| H5  | Product entity: nullable contradictorio          | product.entity.ts  | 统一 nullable con validaciones        |
+| H6  | Token secret sin verificación                    | auth.guard.ts      | Verificar que JWT_SECRET existe       |
+
+### 7.3 Medio Impacto (MEDIUM)
+
+| #   | Issue                                            | Archivo              | Corrección                                 |
+| --- | ------------------------------------------------ | -------------------- | ------------------------------------------ |
+| M1  | findOneParams.id tipo mezclado                   | findOneParams.dto.ts | Usar `@IsNumber()` consistentemente        |
+| M2  | AuthModule duplica providers                     | auth.module.ts       | Importar UserModule en vez de redefinir    |
+| M3  | ProductModule importa User innecesario           | product.module.ts    | Remover User de TypeOrmModule.forFeature   |
+| M4  | Repository wrappea Repository sin valor agregado | user.repository.ts   | Eliminar capa innecesaria o agregar lógica |
+
+### 7.4 Bajo Impacto (LOW)
+
+| #   | Issue                    | Archivo           | Corrección                                                  |
+| --- | ------------------------ | ----------------- | ----------------------------------------------------------- |
+| L1  | Enum VariationTypes typo | product.entity.ts | Normalizar: `None`, `OnlySize`, `OnlyColor`, `SizeAndColor` |
+
+---
+
+## 8. Resumen Consolidado de Todas las Issues
+
+| Severidad    | Cantidad Total |
+| ------------ | -------------- |
+| **CRITICAL** | 2              |
+| **HIGH**     | 11             |
+| **MEDIUM**   | 8              |
+| **LOW**      | 5              |
+
+---
+
 _Este diagnóstico es el punto de partida. Los cambios deben ser aprobados antes de implementarse._

@@ -112,6 +112,37 @@ npm run start:dev
 | `npm run migration:generate -- --name=<name>` | Generates a new migration         |
 | `npm run seed:run`                            | Runs database seeders             |
 
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint         | Description       | Auth Required |
+| ------ | ---------------- | ----------------- | ------------- |
+| POST   | `/auth/login`    | Login usuario     | No            |
+| POST   | `/auth/register` | Registrar usuario | No            |
+
+### User
+
+| Method | Endpoint        | Description                | Auth Required |
+| ------ | --------------- | -------------------------- | ------------- |
+| GET    | `/user/profile` | Obtener perfil del usuario | Yes           |
+
+### Role
+
+| Method | Endpoint       | Description           | Auth Required |
+| ------ | -------------- | --------------------- | ------------- |
+| POST   | `/role/assign` | Asignar rol a usuario | Yes (Admin)   |
+
+### Product
+
+| Method | Endpoint                | Description                  | Auth Required        |
+| ------ | ----------------------- | ---------------------------- | -------------------- |
+| GET    | `/product/:id`          | Obtener producto por ID      | No                   |
+| POST   | `/product/create`       | Crear nuevo producto         | Yes (Admin/Merchant) |
+| POST   | `/product/:id/details`  | Agregar detalles al producto | Yes (Admin/Merchant) |
+| POST   | `/product/:id/activate` | Activar producto             | Yes (Admin/Merchant) |
+| DELETE | `/product/:id`          | Eliminar producto            | Yes (Admin/Merchant) |
+
 ## Testing
 
 | Command              | Description              |
