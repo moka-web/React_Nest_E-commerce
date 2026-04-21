@@ -3,6 +3,7 @@
 .agent/
 openspec/
 engram-data/
+AGENTS.md
 
 # Claude / OpenCode context
 .claude/
