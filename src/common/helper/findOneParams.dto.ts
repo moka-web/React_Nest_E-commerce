@@ -1,6 +1,7 @@
-import { IsNumberString } from 'class-validator';
+// M1: Cambiado de IsNumberString a IsNumber para consistencia
+import { IsNumber } from 'class-validator';
 
 export class FindOneParams {
-  @IsNumberString()
+  @IsNumber()
   id: number;
 }

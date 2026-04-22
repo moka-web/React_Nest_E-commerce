@@ -41,10 +41,13 @@ export class ProductRepository {
   async createProduct(
     category: Category,
     merchantId: number,
+    data?: Record<string, any>,
   ): Promise<Product> {
+    // H4: Incluir todos los datos del DTO al crear el producto
     const product = this.productRepository.create({
       category,
       merchantId,
+      ...data, // H4: Spread de datos adicionales del DTO
     });
     return this.productRepository.save(product);
   }

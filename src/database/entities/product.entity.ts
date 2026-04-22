@@ -1,11 +1,6 @@
 import { Type } from 'class-transformer';
-import {
-  ArrayMinSize,
-  IsDefined,
-  IsNumber,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+// H5: REMOVIDOS - Los decoradores de validación NO belongen en entidades
+// La validación debe estar en los DTOs, no en las entidades de base de datos
 import {
   ProductDetails,
   ProductDetailsTypeFn,
@@ -26,49 +21,35 @@ import { User } from './user.entity';
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn()
-  @IsDefined()
-  @IsNumber()
   public id!: number;
 
+  // H5: nullable: true con @IsDefined() es contradictorio
+  // Los decoradores de validación se eliminan - van en DTOs
   @Column({ type: 'varchar', nullable: true })
-  @IsDefined()
-  @IsString()
   @Index()
-  public code: string;
+  public code: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  @IsDefined()
-  @IsString()
-  public title: string;
+  public title: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  @IsDefined()
-  @IsString()
-  public variationType: string;
+  public variationType: string | null;
 
   @Column({ type: 'text', nullable: true })
-  @IsDefined()
-  @IsString()
-  public description?: string | null;
+  public description: string | null;
 
   @Column({ type: 'text', array: true, default: [] })
-  @ArrayMinSize(1)
-  @IsString({ each: true })
-  public about?: string[];
+  public about: string[];
 
   @Column({ type: 'jsonb', nullable: true })
-  @IsDefined()
   @Type(ProductDetailsTypeFn)
-  @ValidateNested()
   public details: Partial<ProductDetails> | null;
 
   @Column({ default: false })
   public isActive: boolean;
 
   @Column({ type: 'int', nullable: true })
-  @IsDefined()
-  @IsNumber()
-  public merchantId: number;
+  public merchantId: number | null;
 
   @ManyToOne(() => User, (user) => user.products)
   @JoinColumn({ name: 'merchantId' })
@@ -79,9 +60,7 @@ export class Product {
   public category: Category;
 
   @Column({ type: 'int', nullable: true })
-  @IsDefined()
-  @IsNumber()
-  public categoryId: number;
+  public categoryId: number | null;
 
   @CreateDateColumn({ type: 'timestamp' })
   public createdAt!: Date;
@@ -92,7 +71,8 @@ export class Product {
 
 export enum VariationTypes {
   NONE = 'NONE',
-  OnlySize = 'OnlySize',
+  // L1: Normalizado - OnlySize -> OnlyOneSize (consistent naming)
+  OnlyOneSize = 'OnlyOneSize',
   OnlyColor = 'OnlyColor',
   SizeAndColor = 'SizeAndColor',
 }

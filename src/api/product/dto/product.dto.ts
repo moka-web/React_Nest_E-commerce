@@ -5,6 +5,7 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -15,6 +16,27 @@ export class CreateProductDto {
   @IsNumber()
   @IsNotEmpty()
   public categoryId: number;
+
+  // H4: Campos opcionales que pueden pasarse al crear el producto
+  @IsOptional()
+  @IsString()
+  public name?: string;
+
+  @IsOptional()
+  @IsString()
+  public code?: string;
+
+  @IsOptional()
+  @IsString()
+  public description?: string;
+
+  @IsOptional()
+  @IsString()
+  public title?: string;
+
+  @IsOptional()
+  @IsIn(variationTypesKeys)
+  public variationType?: string;
 }
 
 export class ProductDetailsDto {

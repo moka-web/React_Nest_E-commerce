@@ -30,7 +30,13 @@ export class ProductService {
 
     if (!category) throw new NotFoundException(errorMessages.category.notFound);
 
-    return this.productRepository.createProduct(category, merchantId);
+    // H4: Pasar todos los datos del DTO al repository
+    const { categoryId, ...additionalData } = data;
+    return this.productRepository.createProduct(
+      category,
+      merchantId,
+      additionalData,
+    );
   }
 
   async addProductDetails(

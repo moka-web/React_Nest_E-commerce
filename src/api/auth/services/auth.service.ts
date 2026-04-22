@@ -23,7 +23,10 @@ export class AuthService {
 
   async login(user: CreateUserDto) {
     const { email, password } = user;
-    const alreadyExistingUser = await this.userService.findByEmail(email);
+    // H3: Cargar usuario con roles para incluir en el token
+    const alreadyExistingUser = await this.userService.findByEmail(email, {
+      roles: true,
+    });
     if (!alreadyExistingUser)
       throw new UnauthorizedException(errorMessages.auth.wrongCredentials);
 
@@ -33,9 +36,15 @@ export class AuthService {
     );
     if (!isValidPassword)
       throw new UnauthorizedException(errorMessages.auth.wrongCredentials);
+
+    // H3: Incluir roles en el token para evitar DB lookup en cada request
     return this.generateToken({
       id: alreadyExistingUser.id,
       email,
+      roles: alreadyExistingUser.roles.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
     });
   }
 

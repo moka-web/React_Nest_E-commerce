@@ -6,11 +6,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { RoleModule } from '../role/role.module';
 import { AuthController } from './controllers/auth.controller';
 import { AuthService } from './services/auth.service';
-import { UserService } from '../user/services/user.service';
+// M2: UserService importado pero no usado - ya viene de UserModule
 
 @Module({
   imports: [
-    UserModule,
+    UserModule, // M2: UserService ya está exportado desde UserModule
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
       global: true,
@@ -20,7 +20,8 @@ import { UserService } from '../user/services/user.service';
     RoleModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  // M2: Removido UserService de providers - ya está en UserModule
+  providers: [AuthService],
   exports: [],
 })
 export class AuthModule {}

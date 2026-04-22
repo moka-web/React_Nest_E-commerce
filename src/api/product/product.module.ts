@@ -5,11 +5,12 @@ import { ProductRepository } from './repositories/product.repository';
 import { Category } from '../../database/entities/category.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
-import { User } from '../../database/entities/user.entity';
 import { Product } from 'src/database/entities/product.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Product, Category]), UserModule],
+  // M3: Removido User de TypeOrmModule - no es necesario
+  // La relación con User se maneja a través de Product entity
+  imports: [TypeOrmModule.forFeature([Product, Category]), UserModule],
   controllers: [ProductController],
   providers: [ProductService, ProductRepository],
 })

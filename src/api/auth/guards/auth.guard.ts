@@ -23,9 +23,12 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(bearerToken, {
         secret: process.env.JWT_SECRET,
       });
-      request.user = await this.userService.findById(payload.id, {
-        roles: true,
-      });
+      // H3: User data ya viene en el token, no necesita DB lookup
+      request.user = {
+        id: payload.id,
+        email: payload.email,
+        roles: payload.roles,
+      };
       return true;
     } catch (error) {
       if (error instanceof TokenExpiredError)
