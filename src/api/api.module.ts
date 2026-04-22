@@ -5,10 +5,19 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { ProductModule } from './product/product.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { OrderModule } from './order/order.module';
 import { ErrorsFilter } from 'src/errors/errors.filter';
 
 @Module({
-  imports: [AuthModule, UserModule, RoleModule, ProductModule],
+  imports: [
+    AuthModule,
+    UserModule,
+    RoleModule,
+    ProductModule,
+    InventoryModule,
+    OrderModule,
+  ],
   providers: [
     {
       provide: APP_INTERCEPTOR,

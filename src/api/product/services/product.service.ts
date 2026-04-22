@@ -10,10 +10,15 @@ import { errorMessages } from 'src/errors/custom';
 import { validate } from 'class-validator';
 import { successObject } from 'src/common/helper/sucess-response.interceptor';
 import { ProductRepository } from '../repositories/product.repository';
+import { EventEmitter } from '../../../core/event-emitter.service';
+import { PRODUCT_CREATED_EVENT } from '../events/product-created.event';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly productRepository: ProductRepository) {}
+  constructor(
+    private readonly productRepository: ProductRepository,
+    private readonly eventEmitter: EventEmitter,
+  ) {}
 
   async getProduct(productId: number) {
     const product = await this.productRepository.findOneById(productId);
@@ -32,11 +37,22 @@ export class ProductService {
 
     // H4: Pasar todos los datos del DTO al repository
     const { categoryId, ...additionalData } = data;
-    return this.productRepository.createProduct(
+    const product = await this.productRepository.createProduct(
       category,
       merchantId,
       additionalData,
     );
+
+    // Emitir evento ProductCreated
+    const event = this.eventEmitter.createEvent(PRODUCT_CREATED_EVENT, {
+      productId: product.id,
+      name: product.title || 'Untitled',
+      merchantId,
+      categoryId: data.categoryId,
+    });
+    await this.eventEmitter.emit(event);
+
+    return product;
   }
 
   async addProductDetails(

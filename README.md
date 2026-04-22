@@ -1,5 +1,7 @@
 # Ecommerce App with Nest.js and Postgres
 
+> This API implements an **Event-Driven Architecture** for handling business logic and decoupling modules.
+
 ## Description
 
 This project is an ecommerce application built using Nest.js and Postgres. The focus is on writing clean, modular, and testable code, and following a well-organized project structure.
@@ -12,6 +14,57 @@ This project is an ecommerce application built using Nest.js and Postgres. The f
 - JWT (Authentication)
 - Jest
 - Docker
+
+## Event-Driven Architecture
+
+This API uses an **Event-Driven Architecture** to decouple modules. When something important happens in the system (like a user registering or an order being created), an **event** is emitted. Consumers listen to these events and react accordingly.
+
+### How It Works
+
+```
+User Action → Controller → Service (execute action) → EventEmitter → Consumer (react)
+```
+
+### Available Events
+
+| Event            | Module    | When               | Payload                                 |
+| ---------------- | --------- | ------------------ | --------------------------------------- |
+| `UserRegistered` | user      | User registers     | `{userId, email}`                       |
+| `ProductCreated` | product   | Product is created | `{productId, name, merchantId}`         |
+| `StockLow`       | inventory | Stock ≤ 5          | `{productId, currentStock}`             |
+| `OutOfStock`     | inventory | Stock = 0          | `{productId}`                           |
+| `OrderCreated`   | order     | Order is created   | `{orderId, userId, productVariationId}` |
+
+### Event Flow Examples
+
+#### 1. User Registration
+
+```
+POST /auth/register
+    ↓
+UserService.createUser()
+    ↓
+Emit 'UserRegistered' event
+    ↓
+UserRegisteredConsumer logs + sends welcome email (TODO)
+```
+
+#### 2. Order Creation
+
+```
+POST /order (with JWT)
+    ↓
+OrderService.createOrder()
+    ↓
+InventoryService.reserveStock() (decreases stock)
+    ↓
+If stock ≤ 5 → Emit 'StockLow' event
+If stock = 0 → Emit 'OutOfStock' event
+    ↓
+Emit 'OrderCreated' event
+    ↓
+OrderCreatedConsumer logs + sends confirmation (TODO)
+```
 
 ## Configuration
 
@@ -143,6 +196,13 @@ npm run start:dev
 | POST   | `/product/:id/activate` | Activar producto             | Yes (Admin/Merchant) |
 | DELETE | `/product/:id`          | Eliminar producto            | Yes (Admin/Merchant) |
 
+### Order
+
+| Method | Endpoint            | Description      | Auth Required |
+| ------ | ------------------- | ---------------- | ------------- |
+| POST   | `/order`            | Create new order | Yes           |
+| PATCH  | `/order/:id/cancel` | Cancel order     | Yes           |
+
 ## Testing
 
 | Command              | Description              |
@@ -156,6 +216,20 @@ To run the tests, follow these steps:
 
 1. Install dependencies: `npm install`
 2. Run the tests: `npm run test`
+
+## Adding New Events
+
+To add a new event to the system:
+
+1. **Create event definition** in `src/api/{module}/events/{event-name}.event.ts`
+
+2. **Create consumer** in `src/api/{module}/consumers/{event-name}.consumer.ts`
+
+3. **Register in module** - Add EventEmitter and Consumer to the module providers
+
+4. **Emit from service** - Call `eventEmitter.emit()` after the action completes
+
+See `docs/EVENTOS.md` for detailed instructions.
 
 ## Contributing
 

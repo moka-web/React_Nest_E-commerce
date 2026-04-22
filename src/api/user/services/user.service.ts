@@ -6,21 +6,35 @@ import { Role } from 'src/database/entities/role.entity';
 import { UserRelation } from '../dto/user.types';
 import { errorMessages } from 'src/errors/custom';
 import { UserRepository } from '../repositories/user.repository';
+import { EventEmitter } from '../../../core/event-emitter.service';
+import { USER_REGISTERED_EVENT } from '../events/user-registered.event';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly eventEmitter: EventEmitter,
+  ) {}
 
   public async createUser(
     body: CreateUserDto,
     ...roles: Role[]
   ): Promise<User> {
     const hashedPassword = await hash(body.password, 10);
-    return this.userRepository.createAndSave({
+    const user = await this.userRepository.createAndSave({
       ...body,
       password: hashedPassword,
       roles,
     });
+
+    // Emitir evento UserRegistered
+    const event = this.eventEmitter.createEvent(USER_REGISTERED_EVENT, {
+      userId: user.id,
+      email: user.email,
+    });
+    await this.eventEmitter.emit(event);
+
+    return user;
   }
 
   public async findByEmail(
