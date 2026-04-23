@@ -22,6 +22,16 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @ApiOperation({
+    summary: 'Get all products',
+    description: 'Retrieve all active products',
+  })
+  @ApiResponse({ status: 200, description: 'Products retrieved successfully' })
+  @Get()
+  async getAllProducts() {
+    return this.productService.getAllProducts();
+  }
+
+  @ApiOperation({
     summary: 'Get product by ID',
     description: 'Retrieve a single product by its ID',
   })

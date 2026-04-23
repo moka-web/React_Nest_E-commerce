@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { productService } from '../services/productService';
 import type { Product } from '../types';
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    // TODO: fetch products from API when endpoint exists
-    // For now, mock data
-    setProducts([]);
-    setLoading(false);
+    productService
+      .getAll()
+      .then(setProducts)
+      .catch(() => setError('Error al cargar productos'))
+      .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div>Cargando...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="page">

@@ -2,6 +2,11 @@ import api from '../api/axios';
 import type { Product, CreateProductDto, ProductDetailsDto } from '../types';
 
 export const productService = {
+  async getAll(): Promise<Product[]> {
+    const { data } = await api.get<Product[]>('/product');
+    return data;
+  },
+
   async getById(id: number): Promise<Product> {
     const { data } = await api.get<Product>(`/product/${id}`);
     return data;

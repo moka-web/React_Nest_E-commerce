@@ -29,6 +29,14 @@ export class ProductRepository {
     });
   }
 
+  async findAll(): Promise<Product[]> {
+    return this.productRepository.find({
+      where: { isActive: true },
+      relations: ['category'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
   async findByIdWithCategory(productId: number): Promise<Product | null> {
     return this.productRepository.findOne({
       where: {
