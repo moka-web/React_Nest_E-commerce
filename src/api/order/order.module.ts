@@ -6,9 +6,10 @@ import { OrderController } from './controllers/order.controller';
 import { EventEmitter } from '../../core/event-emitter.service';
 import { OrderCreatedConsumer } from './consumers/order-created.consumer';
 import { InventoryModule } from '../inventory/inventory.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order]), InventoryModule],
+  imports: [TypeOrmModule.forFeature([Order]), InventoryModule, AuthModule],
   controllers: [OrderController],
   providers: [OrderService, EventEmitter, OrderCreatedConsumer],
   exports: [OrderService],

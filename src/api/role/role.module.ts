@@ -6,12 +6,11 @@ import { User } from '../../database/entities/user.entity';
 import { RoleController } from './controllers/role.controller';
 import { RoleService } from './services/role.service';
 import { RoleRepository } from './repositories/role.repository';
-import { UserService } from '../user/services/user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Role, User]), UserModule],
   controllers: [RoleController],
-  providers: [RoleService, RoleRepository, UserService],
+  providers: [RoleService, RoleRepository],
   exports: [RoleService],
 })
 export class RoleModule {}

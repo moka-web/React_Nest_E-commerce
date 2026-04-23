@@ -92,7 +92,9 @@ PORT=3000
 src/
 ├── api/                    # Feature modules
 │   ├── auth/              # Authentication
+│   ├── inventory/         # Inventory management
 │   ├── product/           # Product management
+│   ├── order/            # Order management
 │   ├── user/              # User management
 │   └── role/              # Role management
 ├── common/
@@ -104,6 +106,34 @@ src/
 ├── errors/                # Error handling
 └── config/                # App configuration
 ```
+
+## Repository Pattern
+
+Some modules use a **Repository Layer** to encapsulate database logic, while others use `EntityManager` directly. This is intentional.
+
+### Modules WITH Repository Layer
+
+| Module    | Why?                                                      |
+| --------- | --------------------------------------------------------- |
+| `user`    | Complex queries: login, role lookups, user search         |
+| `product` | Complex queries: filtering, pagination, merchant products |
+| `role`    | Role-permission mappings, multiple joins                  |
+
+### Modules WITHOUT Repository Layer
+
+| Module      | Why?                                                      |
+| ----------- | --------------------------------------------------------- |
+| `order`     | Simple operations: only create + update status (cancel)   |
+| `inventory` | Simple operations: only update quantity (reserve/release) |
+
+**Rationale:** If a module only has simple CRUD operations (create + update), adding a repository layer adds unnecessary complexity. Direct `EntityManager` usage in the service is sufficient.
+
+When to add a Repository:
+
+- Complex queries with filters, joins, or pagination
+- Multiple entities involved
+- Reusable query logic across endpoints
+- Complex data transformations
 
 ## Getting Started
 
@@ -211,6 +241,48 @@ npm run start:dev
 | `npm run test:watch` | Runs tests in watch mode |
 | `npm run test:cov`   | Runs tests with coverage |
 | `npm run test:e2e`   | Runs end-to-end tests    |
+
+## Swagger Documentation
+
+API docs are available at **http://localhost:3000/api**
+
+### Swagger Features
+
+- Interactive API explorer
+- Bearer token authentication
+- Request/response schemas
+- Model definitions
+
+### Tags
+
+| Tag         | Module               |
+| ----------- | -------------------- |
+| `auth`      | Authentication       |
+| `users`     | User management      |
+| `products`  | Product management   |
+| `orders`    | Order management     |
+| `inventory` | Inventory management |
+| `roles`     | Role management      |
+
+### Using with JWT
+
+1. Login to get token
+2. Click **Authorize** button
+3. Enter: `Bearer <your-token>`
+
+### Example: Create Order
+
+```
+POST /order
+Authorization: Bearer eyJhbGciOiJIUzI1...
+
+Body:
+{
+  "productVariationId": 1,
+  "countryCode": "AR",
+  "quantity": 2
+}
+```
 
 To run the tests, follow these steps:
 

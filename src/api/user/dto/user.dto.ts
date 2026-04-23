@@ -7,12 +7,22 @@ import {
   MinLength,
   Matches,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
+  @ApiProperty({
+    example: 'user@example.com',
+    description: 'User email address',
+  })
   @IsEmail()
   @IsNotEmpty()
   public email: string;
 
+  @ApiProperty({
+    example: 'Password123',
+    description:
+      'Password with min 8 chars, 1 uppercase, 1 lowercase, 1 number',
+  })
   @IsString()
   @IsNotEmpty()
   // H2: Validación mínima de password
@@ -28,8 +38,10 @@ export class CreateUserDto {
 
 export class UserDto {
   @Expose()
+  @ApiProperty()
   public id: number;
 
   @Expose()
+  @ApiProperty()
   public email: string;
 }
