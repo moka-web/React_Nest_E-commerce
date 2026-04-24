@@ -34,6 +34,14 @@ export class CreateUserDto {
       'Password must contain at least 1 uppercase, 1 lowercase, and 1 number',
   })
   public password: string;
+
+  @ApiPropertyOptional({
+    example: 'Customer',
+    description: 'User role: Customer or Merchant',
+    required: false,
+  })
+  @IsString()
+  public role?: string;
 }
 
 export class UserDto {

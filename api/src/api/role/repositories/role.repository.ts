@@ -16,4 +16,12 @@ export class RoleRepository {
       },
     });
   }
+
+  async findOneByName(name: string): Promise<Role | null> {
+    return this.roleRepository.findOne({
+      where: {
+        name,
+      },
+    });
+  }
 }

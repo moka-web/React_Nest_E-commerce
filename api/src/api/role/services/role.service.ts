@@ -28,4 +28,12 @@ export class RoleService {
     }
     return role;
   }
+
+  async findByName(name: string) {
+    const role = await this.roleRepository.findOneByName(name);
+    if (!role) {
+      throw new NotFoundException(errorMessages.role.notFound);
+    }
+    return role;
+  }
 }

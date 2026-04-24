@@ -5,7 +5,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { RoleIds } from 'src/api/role/enum/role.enum';
 import { RoleService } from 'src/api/role/services/role.service';
 import { CreateUserDto } from 'src/api/user/dto/user.dto';
 import { UserService } from 'src/api/user/services/user.service';
@@ -53,9 +52,11 @@ export class AuthService {
     if (alreadyExistingUser)
       throw new ConflictException(errorMessages.auth.userAlreadyExist);
 
-    const customerRole = await this.roleService.findById(RoleIds.Customer);
+    // Asignar rol según selección (Merchant o Customer, no Admin)
+    const roleName = user.role === 'Merchant' ? 'Merchant' : 'Customer';
+    const role = await this.roleService.findByName(roleName);
 
-    await this.userService.createUser(user, customerRole);
+    await this.userService.createUser(user, role);
 
     return {
       message: 'success',
