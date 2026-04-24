@@ -71,26 +71,14 @@ client/src/
 
 | Patrón | Uso |
 |--------|-----|
-| **Repository** | Para módulos con consultas complejas (user, product, role) |
+| **Repository** | Módulos con consultas complejas: `user`, `product`, `role` |
 | **Event Emitter** | Desacoplamiento de lógica secundaria (notificaciones) |
-| **Context API** | Estado global (auth, carrito) |
-| **Container/Presentational** | Separación de lógica y presentación |
+| **Context API** | Estado global: `AuthContext`, `CartContext`, `NotificationContext` |
 
-### Modelo de Datos
+### Modelo de Datos (Roles)
 
-```
-User (1) ←→ (N) UserRole ←→ (N) Role
-User (1) ←→ (N) Product
-Product (1) ←→ (N) ProductVariation
-ProductVariation (1) ←→ (N) Inventory
-ProductVariation (1) ←→ (N) ProductVariationPrice
-Inventory (1) ←→ (1) Country
-ProductVariationPrice (1) ←→ (1) Currency
-```
-
-**Roles:**
 - `Customer` (id: 1) — Puede comprar
-- `Merchant` (id: 2) — Puede vender/crear productos
+- `Merchant` (id: 2) — Puede vender/crear productos  
 - `Admin` (id: 3) — Acceso total
 
 ## 🚀 Cómo Levantar Localmente
