@@ -4,7 +4,7 @@ import {
   useState,
   useEffect,
   useCallback,
-  ReactNode,
+  type ReactNode,
 } from 'react';
 import { notificationService } from '../services/notificationService';
 import { useAuth } from './AuthContext';
