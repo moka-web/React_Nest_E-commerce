@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 
 export function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,8 +16,7 @@ export function Login() {
     setLoading(true);
 
     try {
-      const response = await authService.login({ email, password });
-      localStorage.setItem('token', response.access_token);
+      await login(email, password);
       navigate('/products');
     } catch (err: unknown) {
       setError('Credenciales inválidas');
@@ -27,38 +27,60 @@ export function Login() {
 
   return (
     <div className="page">
-      <h1>Iniciar Sesión</h1>
-      <form onSubmit={handleSubmit}>
-        {error && <p className="error">{error}</p>}
-
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+      <div className="auth-form">
+        <div className="auth-header">
+          <h1>Iniciar Sesión</h1>
+          <p>Ingresa a tu cuenta</p>
         </div>
 
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error">{error}</p>}
+
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? 'Cargando...' : 'Entrar'}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          ¿No tenés cuenta? <a href="/register">Registrarse</a>
         </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Cargando...' : 'Entrar'}
-        </button>
-      </form>
-
-      <p>
-        ¿No tenés cuenta? <a href="/register">Registrarse</a>
-      </p>
+        <div className="test-credentials">
+          <p>Credenciales de prueba:</p>
+          <code>test1@test.com / Admin1234</code>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail('test1@test.com');
+              setPassword('Admin1234');
+            }}
+          >
+            Usar credenciales
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

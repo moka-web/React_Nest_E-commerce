@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { productService } from '../services/productService';
+import { useAuth } from '../context/AuthContext';
+import { ProductCard } from '../components/ProductCard';
 import type { Product } from '../types';
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     productService
@@ -19,28 +22,27 @@ export function Products() {
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>{error}</div>;
 
+  const isMerchant = user && user.roleId !== 1;
+
   return (
     <div className="page">
       <h1>Productos</h1>
-      <Link to="/products/new" className="btn">
-        Agregar Producto
-      </Link>
 
       {products.length === 0 ? (
         <p>No hay productos</p>
       ) : (
         <div className="products-grid">
-          {products.map((product) => (
-            <Link
-              key={product.id}
-              to={`/products/${product.id}`}
-              className="product-card"
-            >
-              <h2>{product.name}</h2>
-              <p>{product.description}</p>
-              <span>{product.isActive ? 'Activo' : 'Inactivo'}</span>
-            </Link>
+          {products?.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+      )}
+
+      {isMerchant && (
+        <div className="page-footer">
+          <Link to="/products/new" className="btn">
+            Agregar Producto
+          </Link>
         </div>
       )}
     </div>

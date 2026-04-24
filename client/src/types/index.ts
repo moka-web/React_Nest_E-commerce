@@ -10,7 +10,7 @@ export interface User {
 }
 
 export interface AuthResponse {
-  access_token: string;
+  accessToken: string;
   user: User;
 }
 
@@ -22,27 +22,34 @@ export interface LoginCredentials {
 // ============ PRODUCTS ============
 export interface Product {
   id: number;
-  name: string;
+  name?: string;
+  code?: string;
+  title?: string;
   description?: string;
   categoryId: number;
   merchantId: number;
   isActive: boolean;
+  variationType?: 'NONE' | 'OnlyOneSize' | 'OnlyColor' | 'SizeAndColor';
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateProductDto {
-  name: string;
   categoryId: number;
+  name?: string;
+  code?: string;
   description?: string;
+  title?: string;
+  variationType?: string;
 }
 
 export interface ProductDetailsDto {
-  price?: number;
-  currencyId?: number;
-  colorId?: number;
-  sizeId?: number;
-  stock?: number;
+  title: string;
+  code: string;
+  variationType: string;
+  details: Record<string, unknown>;
+  about: string[];
+  description: string;
 }
 
 // ============ ORDERS ============
@@ -52,8 +59,7 @@ export interface Order {
   productVariationId: number;
   countryCode: string;
   quantity: number;
-  total: number;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'fulfilled';
+  status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'FULFILLED';
   createdAt: string;
   updatedAt: string;
 }
@@ -61,5 +67,16 @@ export interface Order {
 export interface CreateOrderDto {
   productVariationId: number;
   countryCode: string;
+  quantity: number;
+}
+
+// ============ CATEGORY ============
+export interface Category {
+  id: number;
+  name: string;
+}
+
+// ============ CART ============
+export interface CartItem extends Product {
   quantity: number;
 }

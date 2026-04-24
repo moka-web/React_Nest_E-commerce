@@ -1,44 +1,61 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import type { User } from '../types';
 
 export function Profile() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user, logout, loading } = useAuth();
   const { clearCart } = useCart();
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (!currentUser) {
+    console.log('Profile render, loading:', loading, 'user:', user);
+    if (!loading && !user) {
       navigate('/login');
-      return;
     }
-    setUser(currentUser);
-    setLoading(false);
-  }, [navigate]);
+  }, [loading, user, navigate]);
 
   const handleLogout = () => {
-    authService.logout();
+    logout();
     clearCart();
     navigate('/login');
   };
 
-  if (loading) return <div>Cargando...</div>;
+  if (loading) return <div className="page">Cargando...</div>;
+  if (!user) return null;
+
+  const getInitials = (email: string) => {
+    return email.charAt(0).toUpperCase();
+  };
 
   return (
     <div className="page">
       <h1>Mi Perfil</h1>
-      {user && (
-        <div>
-          <p>Email: {user.email}</p>
-          <p>ID: {user.id}</p>
-          <p>Estado: {user.isActive ? 'Activo' : 'Inactivo'}</p>
+      
+      <div className="profile-card">
+        <div className="profile-header">
+          <div className="profile-avatar">{getInitials(user.email)}</div>
+          <div className="profile-info">
+            <h2>{user.email}</h2>
+            <p>{user.isActive ? 'Activo' : 'Inactivo'}</p>
+          </div>
         </div>
-      )}
-      <button onClick={handleLogout}>Cerrar Sesión</button>
+
+        <div className="profile-details">
+          <div className="profile-detail">
+            <label>Email</label>
+            <span>{user.email}</span>
+          </div>
+          <div className="profile-detail">
+            <label>ID</label>
+            <span>{user.id}</span>
+          </div>
+        </div>
+
+        <button onClick={handleLogout} className="btn-logout">
+          Cerrar Sesión
+        </button>
+      </div>
     </div>
   );
 }

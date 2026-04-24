@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -16,9 +16,8 @@ export function Register() {
     setLoading(true);
 
     try {
-      const response = await authService.register({ email, password, name });
-      localStorage.setItem('token', response.access_token);
-      navigate('/products');
+      await register(email, password);
+      navigate('/login');
     } catch (err: unknown) {
       setError('Error al registrar');
     } finally {
@@ -28,48 +27,46 @@ export function Register() {
 
   return (
     <div className="page">
-      <h1>Registrarse</h1>
-      <form onSubmit={handleSubmit}>
-        {error && <p className="error">{error}</p>}
-
-        <div>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+      <div className="auth-form">
+        <div className="auth-header">
+          <h1>Registrarse</h1>
+          <p>Creá tu cuenta</p>
         </div>
 
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        <form onSubmit={handleSubmit}>
+          {error && <p className="error">{error}</p>}
+
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button type="submit" disabled={loading}>
+            {loading ? 'Cargando...' : 'Registrarse'}
+          </button>
+        </form>
+
+        <div className="auth-footer">
+          ¿Ya tenés cuenta? <a href="/login">Iniciar Sesión</a>
         </div>
-
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? 'Cargando...' : 'Registrarse'}
-        </button>
-      </form>
-
-      <p>
-        ¿Ya tenés cuenta? <a href="/login">Iniciar Sesión</a>
-      </p>
+      </div>
     </div>
   );
 }
