@@ -8,7 +8,11 @@ async function bootstrap() {
   
   // Enable CORS for the React client
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:3001'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:3001',
+      'https://react-nest-e-commerce.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
