@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../../database/entities/user.entity';
 import { UserController } from './controllers/user.controller';
@@ -6,6 +6,7 @@ import { UserService } from './services/user.service';
 import { UserRepository } from './repositories/user.repository';
 import { EventEmitter } from '../../core/event-emitter.service';
 import { UserRegisteredConsumer } from './consumers/user-registered.consumer';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   controllers: [UserController],
@@ -16,6 +17,6 @@ import { UserRegisteredConsumer } from './consumers/user-registered.consumer';
     UserRegisteredConsumer,
   ],
   exports: [UserService, UserRepository],
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), forwardRef(() => NotificationModule)],
 })
 export class UserModule {}

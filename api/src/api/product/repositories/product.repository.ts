@@ -31,7 +31,7 @@ export class ProductRepository {
 
   async findAll(): Promise<Product[]> {
     return this.productRepository.find({
-      where: { isActive: true },
+      where: {},
       relations: ['category'],
       order: { createdAt: 'DESC' },
     });
@@ -55,6 +55,7 @@ export class ProductRepository {
     const product = this.productRepository.create({
       category,
       merchantId,
+      isActive: true,
       ...data, // H4: Spread de datos adicionales del DTO
     });
     return this.productRepository.save(product);

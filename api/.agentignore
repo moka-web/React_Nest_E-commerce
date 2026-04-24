@@ -10,8 +10,8 @@ coverage
 logs
 *.log
 
-# Database
-database-data
+<!-- # Database
+database-data -->
 
 # OS
 .DS_Store

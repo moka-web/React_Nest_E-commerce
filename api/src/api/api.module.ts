@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
 import { ProductModule } from './product/product.module';
 import { OrderModule } from './order/order.module';
+import { NotificationModule } from './notification/notification.module';
 import { ErrorsFilter } from 'src/errors/errors.filter';
 
 @Module({
@@ -15,6 +16,7 @@ import { ErrorsFilter } from 'src/errors/errors.filter';
     RoleModule,
     ProductModule,
     OrderModule,
+    NotificationModule,
   ],
   providers: [
     {

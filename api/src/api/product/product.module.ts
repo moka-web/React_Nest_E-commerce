@@ -8,11 +8,12 @@ import { UserModule } from '../user/user.module';
 import { Product } from 'src/database/entities/product.entity';
 import { EventEmitter } from '../../core/event-emitter.service';
 import { ProductCreatedConsumer } from './consumers/product-created.consumer';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   // M3: Removido User de TypeOrmModule - no es necesario
   // La relación con User se maneja a través de Product entity
-  imports: [TypeOrmModule.forFeature([Product, Category]), UserModule],
+  imports: [TypeOrmModule.forFeature([Product, Category]), UserModule, NotificationModule],
   controllers: [ProductController],
   providers: [
     ProductService,

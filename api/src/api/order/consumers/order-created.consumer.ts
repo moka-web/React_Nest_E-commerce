@@ -4,12 +4,17 @@ import {
   OrderCreatedEvent,
   ORDER_CREATED_EVENT,
 } from '../events/order-created.event';
+import { NotificationService } from '../../notification/services/notification.service';
+import { NotificationType } from 'src/database/entities/notification.entity';
 
 @Injectable()
 export class OrderCreatedConsumer {
   private readonly logger = new Logger(OrderCreatedConsumer.name);
 
-  constructor(private readonly eventEmitter: EventEmitter) {
+  constructor(
+    private readonly eventEmitter: EventEmitter,
+    private readonly notificationService: NotificationService,
+  ) {
     this.register();
   }
 
@@ -24,8 +29,19 @@ export class OrderCreatedConsumer {
       `Order created: #${orderId} - User: ${userId}, ` +
         `ProductVariation: ${productVariationId}, Qty: ${quantity}`,
     );
-    this.logger.log(`[TODO] Send order confirmation to user`);
 
-    // TODO: Enviar email de confirmación de pedido
+    // Simular envío de email de confirmación
+    this.logger.log(`[EMAIL] Sending order confirmation for order #${orderId}`);
+    this.logger.log(`[EMAIL] Subject: Confirmación de tu pedido #${orderId}`);
+    this.logger.log(`[EMAIL] Body: Tu pedido está siendo procesado...`);
+
+    // Guardar evidencia de la notificación
+    await this.notificationService.create(
+      userId,
+      NotificationType.ORDER_CONFIRMATION,
+      'Pedido confirmado',
+      `Tu pedido #${orderId} ha sido confirmado. Cantidad: ${quantity} unidades.`,
+      { orderId, productVariationId, quantity },
+    );
   }
 }

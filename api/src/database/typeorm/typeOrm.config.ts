@@ -18,5 +18,5 @@ export const dataSourceOptions: DataSourceOptions = {
   migrations: ['dist/database/migration/history/*.js'],
   logger: 'simple-console',
   synchronize: false, // never use TRUE in production!
-  logging: true, // for debugging in dev Area only
+  logging: ['error', 'warn'], // only log errors and warnings
 };

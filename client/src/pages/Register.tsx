@@ -13,13 +13,32 @@ export function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validación frontend
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('La contraseña debe tener al menos 1 mayúscula');
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setError('La contraseña debe tener al menos 1 minúscula');
+      return;
+    }
+    if (!/\d/.test(password)) {
+      setError('La contraseña debe tener al menos 1 número');
+      return;
+    }
+
     setLoading(true);
 
     try {
       await register(email, password);
       navigate('/login');
     } catch (err: unknown) {
-      setError('Error al registrar');
+      setError('Error al registrar. Verificá los datos.');
     } finally {
       setLoading(false);
     }
@@ -56,6 +75,9 @@ export function Register() {
               placeholder="••••••••"
               required
             />
+            <small style={{ color: 'var(--text)', fontSize: '12px' }}>
+              Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número
+            </small>
           </div>
 
           <button type="submit" disabled={loading}>

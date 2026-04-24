@@ -4,12 +4,17 @@ import {
   UserRegisteredEvent,
   USER_REGISTERED_EVENT,
 } from '../events/user-registered.event';
+import { NotificationService } from '../../notification/services/notification.service';
+import { NotificationType } from 'src/database/entities/notification.entity';
 
 @Injectable()
 export class UserRegisteredConsumer {
   private readonly logger = new Logger(UserRegisteredConsumer.name);
 
-  constructor(private readonly eventEmitter: EventEmitter) {
+  constructor(
+    private readonly eventEmitter: EventEmitter,
+    private readonly notificationService: NotificationService,
+  ) {
     this.register();
   }
 
@@ -21,9 +26,19 @@ export class UserRegisteredConsumer {
     const { userId, email } = event.payload;
 
     this.logger.log(`User registered: ${email} - ID: ${userId}`);
-    this.logger.log(`[TODO] Send welcome email to: ${email}`);
 
-    // TODO: Aquí iría la lógica real de email
-    // await this.emailService.sendWelcome(email);
+    // Simular envío de email de bienvenida
+    this.logger.log(`[EMAIL] Sending welcome email to: ${email}`);
+    this.logger.log(`[EMAIL] Subject: Bienvenido a nuestra tienda!`);
+    this.logger.log(`[EMAIL] Body: Hola! Gracias por registrarte...`);
+
+    // Guardar evidencia de la notificación
+    await this.notificationService.create(
+      userId,
+      NotificationType.WELCOME,
+      '¡Bienvenido!',
+      'Gracias por registrarte en nuestra tienda. Explora nuestros productos y disfruta de las mejores ofertas.',
+      { email },
+    );
   }
 }

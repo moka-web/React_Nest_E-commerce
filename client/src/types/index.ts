@@ -80,3 +80,15 @@ export interface Category {
 export interface CartItem extends Product {
   quantity: number;
 }
+
+// ============ NOTIFICATIONS ============
+export interface Notification {
+  id: number;
+  userId: number;
+  type: 'WELCOME' | 'ORDER_CONFIRMATION' | 'ORDER_CANCELLED' | 'PRODUCT_CREATED' | 'SYSTEM';
+  title: string;
+  message: string;
+  read: boolean;
+  metadata?: Record<string, unknown>;
+  createdAt: string;
+}
