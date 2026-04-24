@@ -6,9 +6,15 @@ export function getEnvPath(dest: string): string {
   const fallback: string = resolve(`${dest}/.env`);
   const filename: string = env ? `${env}.env` : 'development.env';
   let filePath: string = resolve(`${dest}/${filename}`);
+  
   if (!existsSync(filePath)) {
     filePath = fallback;
   }
-
+  
+  // Return null or undefined if file doesn't exist (dotenv will handle it gracefully)
+  if (!existsSync(filePath)) {
+    return null;
+  }
+  
   return filePath;
 }
