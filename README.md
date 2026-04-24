@@ -199,7 +199,7 @@ Para más detalles sobre cada parte del proyecto:
 - El backend corre migraciones automáticamente al iniciar (Docker)
 - Los seeders cargan datos iniciales (roles, categorías, colores, talles, monedas, países)
 - El frontend usa JWT para autenticación (token almacenado en localStorage)
-- El carrito se maneja con React Context (no persiste entre sesiones)
+- El carrito se maneja con React Context y persiste en **localStorage**
 
 ## 🤝 Contribuir
 
