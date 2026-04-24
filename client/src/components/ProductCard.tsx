@@ -9,6 +9,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
 
+  const productName = product.name || product.title || 'Sin nombre';
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -18,8 +20,8 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link to={`/products/${product.id}`} className="product-card">
       <div className="product-info">
-        <h2>{product.name || product.title}</h2>
-        <p>{product.description}</p>
+        <h2>{productName}</h2>
+        <p>{product.description || 'Sin descripción'}</p>
         <span className={product.isActive ? 'status-active' : 'status-inactive'}>
           {product.isActive ? 'Activo' : 'Inactivo'}
         </span>

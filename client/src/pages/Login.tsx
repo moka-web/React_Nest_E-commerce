@@ -66,20 +66,6 @@ export function Login() {
         <div className="auth-footer">
           ¿No tenés cuenta? <a href="/register">Registrarse</a>
         </div>
-
-        <div className="test-credentials">
-          <p>Credenciales de prueba:</p>
-          <code>test1@test.com / Admin1234</code>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail('test1@test.com');
-              setPassword('Admin1234');
-            }}
-          >
-            Usar credenciales
-          </button>
-        </div>
       </div>
     </div>
   );

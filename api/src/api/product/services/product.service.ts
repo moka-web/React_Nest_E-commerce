@@ -39,8 +39,13 @@ export class ProductService {
 
     if (!category) throw new NotFoundException(errorMessages.category.notFound);
 
-    // H4: Pasar todos los datos del DTO al repository
-    const { categoryId, ...additionalData } = data;
+    // Map name to title if name is provided
+    const productData = {
+      ...data,
+      title: data.title || data.name,
+    };
+
+    const { categoryId, name, ...additionalData } = productData;
     const product = await this.productRepository.createProduct(
       category,
       merchantId,
