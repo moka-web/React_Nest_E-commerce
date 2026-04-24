@@ -5,6 +5,14 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Enable CORS for the React client
+  app.enableCors({
+    origin: ['http://localhost:5173', 'http://localhost:3001'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+  
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // Swagger configuration
@@ -17,7 +25,6 @@ async function bootstrap() {
     .addTag('users', 'User management endpoints')
     .addTag('products', 'Product management endpoints')
     .addTag('orders', 'Order management endpoints')
-    .addTag('inventory', 'Inventory management endpoints')
     .addTag('roles', 'Role management endpoints')
     .build();
 
