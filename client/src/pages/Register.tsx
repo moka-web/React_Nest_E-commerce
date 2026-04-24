@@ -7,6 +7,7 @@ export function Register() {
   const { register } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('Customer');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +36,7 @@ export function Register() {
     setLoading(true);
 
     try {
-      await register(email, password);
+      await register(email, password, role);
       navigate('/login');
     } catch (err: unknown) {
       setError('Error al registrar. Verificá los datos.');
@@ -78,6 +79,14 @@ export function Register() {
             <small style={{ color: 'var(--text)', fontSize: '12px' }}>
               Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número
             </small>
+          </div>
+
+          <div className="form-group">
+            <label>Tipo de cuenta</label>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="Customer">Cliente</option>
+              <option value="Merchant">Vendedor</option>
+            </select>
           </div>
 
           <button type="submit" disabled={loading}>
