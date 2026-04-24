@@ -1,21 +1,21 @@
-# Frontend — React + TypeScript + Vite
+# Frontend — React E-commerce Client
 
 Cliente web del e-commerce full stack.
 
-## 🛠️ Stack
+## Stack
 
-- **React** 19.2
+- **React** 19
 - **TypeScript**
 - **Vite** 8
 - **React Router** v7
-- **Axios** (HTTP client)
+- **Axios**
 
-## 📁 Estructura
+## Estructura
 
 ```
 src/
 ├── api/
-│   └── axios.ts          # Configuración de axios con interceptors
+│   └── axios.ts           # Configuración HTTP con interceptors
 ├── components/
 │   ├── NavBar.tsx        # Navegación
 │   └── ProductCard.tsx   # Tarjeta de producto
@@ -25,14 +25,14 @@ src/
 │   └── NotificationContext.tsx  # Notificaciones
 ├── pages/
 │   ├── Login.tsx         # Login
-│   ├── Register.tsx      # Registro
+│   ├── Register.tsx      # Registro (con selección de rol)
 │   ├── Products.tsx      # Lista de productos
 │   ├── ProductDetail.tsx # Detalle de producto
-│   ├── CreateProduct.tsx # Crear producto (Merchant)
+│   ├── CreateProduct.tsx # Crear producto (merchant)
 │   ├── Cart.tsx          # Carrito
 │   ├── Checkout.tsx      # Checkout
 │   ├── Orders.tsx        # Pedidos
-│   ├── Profile.tsx       # Perfil de usuario
+│   ├── Profile.tsx       # Perfil
 │   └── Notifications.tsx # Notificaciones
 ├── services/
 │   ├── authService.ts
@@ -40,85 +40,61 @@ src/
 │   ├── orderService.ts
 │   └── notificationService.ts
 ├── types/
-│   └── index.ts          # Tipos TypeScript
-├── App.tsx               # Componente principal
-└── main.tsx              # Entry point
+│   └── index.ts
+├── App.tsx
+└── main.tsx
 ```
 
-## 🚀 Cómo Levantar
+## Cómo Levantar
 
 ```bash
 npm install
 npm run dev
 ```
 
-## 🔗 Variables de Entorno
+## Variables de Entorno
 
 Crear `.env.development`:
 ```bash
 VITE_API_URL=http://localhost:3000
 ```
 
-Para producción (Vercel), setear `VITE_API_URL` en el dashboard.
+Para Vercel: setear `VITE_API_URL` en Project Settings.
 
-## 🔐 Autenticación
+## Rutas
 
-El frontend maneja JWT con:
-- **localStorage** para guardar el token
-- **Interceptor de Axios** para agregar el token a cada request
-- **AuthContext** para estado global de usuario
-
-### Estructura del Token JWT
-
-```typescript
-{
-  id: number,
-  email: string,
-  roles: [{ id: number, name: string }]
-}
-```
-
-## 🛒 Carrito
-
-- Manejado con React Context (`CartContext`)
-- No persiste entre sesiones (se pierde al cerrar el navegador)
-- Agrega productos por variation ID
-
-## 📱 Páginas
-
-| Ruta | Componente | Descripción |
-|------|------------|-------------|
-| `/` | Redirect | Redirige a `/products` |
+| Ruta | Página | Descripción |
+|------|--------|-------------|
 | `/login` | Login | Iniciar sesión |
-| `/register` | Register | Registrarse (con selección de rol) |
+| `/register` | Register | Registrarse (Customer o Merchant) |
 | `/products` | Products | Lista de productos |
 | `/products/:id` | ProductDetail | Detalle de producto |
-| `/products/new` | CreateProduct | Crear producto (Merchant+) |
+| `/products/new` | CreateProduct | Crear producto (merchant+) |
 | `/cart` | Cart | Carrito de compras |
 | `/checkout` | Checkout | Finalizar compra |
 | `/orders` | Orders | Mis pedidos |
 | `/profile` | Profile | Mi perfil |
 | `/notifications` | Notifications | Notificaciones |
 
-## 🎨 Roles y Vistas
+## Autenticación
 
-| Rol | puede ver |
-|-----|-----------|
-| Customer | Productos, carrito, pedidos, perfil |
-| Merchant | Lo anterior + crear productos |
-| Admin | Todo |
+- JWT almacenado en `localStorage`
+- Axios interceptor agrega `Authorization: Bearer <token>`
+- `AuthContext` provee estado global de usuario
 
-## 🔌 API Endpoints Consumidos
+## API Consumida
 
-| Servicio | Endpoint | Método |
-|----------|----------|--------|
-| auth | `/auth/login` | POST |
-| auth | `/auth/register` | POST |
-| user | `/user/profile` | GET |
-| product | `/product` | GET |
-| product | `/product/:id` | GET |
-| product | `/product/create` | POST |
-| order | `/order` | POST |
-| order | `/order` | GET |
-| notification | `/notification` | GET |
-| notification | `/notification/read/:id` | PATCH |
+| Servicio | Método | Endpoint |
+|----------|--------|----------|
+| auth | POST | `/auth/login` |
+| auth | POST | `/auth/register` |
+| user | GET | `/user/profile` |
+| product | GET | `/product` |
+| product | GET | `/product/:id` |
+| product | POST | `/product/create` |
+| order | GET | `/order` |
+| order | POST | `/order` |
+| order | PATCH | `/order/:id/cancel` |
+| notification | GET | `/notification` |
+| notification | PATCH | `/notification/read/:id` |
+| notification | PATCH | `/notification/read-all` |

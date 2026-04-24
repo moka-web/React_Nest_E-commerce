@@ -1,312 +1,193 @@
-# Ecommerce App con Nest.js y Postgres
+# Backend — Nest.js E-commerce API
 
-> Esta API implementa una **Arquitectura Basada en Eventos** para manejar la lógica de negocio y desacoplar los módulos.
-
-## Descripción
-
-Este proyecto es una aplicación de e-commerce construída con Nest.js y Postgres. El enfoque está en escribir código limpio, modular y testeable, siguiendo una estructura de proyecto bien organizada.
+API REST del e-commerce full stack.
 
 ## Tecnologías
 
-- Nest.js
-- PostgreSQL
-- TypeORM
-- JWT (Autenticación)
-- Jest
-- Docker
+- **Nest.js** 9.x
+- **TypeScript**
+- **TypeORM**
+- **PostgreSQL**
+- **JWT** (Autenticación)
+- **Swagger** (Documentación)
+- **Jest** (Testing)
+- **Docker**
 
 ## Arquitectura Basada en Eventos
 
-Esta API usa una **Arquitectura Basada en Eventos** para desacoplar los módulos. Cuando algo importante sucede en el sistema (como un usuario registrándose o un pedido siendo creado), un **evento** es emitsdo. Los consumidores escuchan estos eventos y reaccionan en consecuencia.
-
-### Cómo Funciona
+La API usa un **Event Emitter** para desacoplar módulos. Cuando ocurre una acción importante, se emite un evento y los consumidores reaccionan en consecuencia.
 
 ```
-Acción del Usuario → Controlador → Servicio (ejecuta acción) → EventEmitter → Consumidor (reacciona)
+Acción → Controlador → Servicio → EventEmitter → Consumidor
 ```
 
 ### Eventos Disponibles
 
-| Evento           | Módulo    | Cuándo              | Payload                                 |
-| ---------------- | --------- | ------------------- | --------------------------------------- |
-| `UserRegistered` | user      | Usuario se registra | `{userId, email}`                       |
-| `ProductCreated` | product   | Producto se crea    | `{productId, name, merchantId}`         |
-| `StockLow`       | inventory | Stock ≤ 5           | `{productId, currentStock}`             |
-| `OutOfStock`     | inventory | Stock = 0           | `{productId}`                           |
-| `OrderCreated`   | order     | Pedido se crea      | `{orderId, userId, productVariationId}` |
+| Evento | Trigger | Payload |
+|--------|---------|---------|
+| `UserRegistered` | Registro de usuario | `{userId, email}` |
+| `ProductCreated` | Creación de producto | `{productId, name, merchantId, categoryId}` |
+| `OrderCreated` | Creación de pedido | `{orderId, userId, productVariationId}` |
 
-### Ejemplos de Flujo de Eventos
+### Agregar Nuevos Eventos
 
-#### 1. Registro de Usuario
+1. Crear archivo de evento en `src/api/{module}/events/{name}.event.ts`
+2. Crear consumidor en `src/api/{module}/consumers/{name}.consumer.ts`
+3. Registrar en el módulo
+4. Emitir desde el servicio con `eventEmitter.emit()`
 
-```
-POST /auth/register
-    ↓
-UserService.createUser()
-    ↓
-Emitir evento 'UserRegistered'
-    ↓
-UserRegisteredConsumer registra + envía email de bienvenida (TODO)
-```
+## Patrón Repository
 
-#### 2. Creación de Pedido
+Algunos módulos usan **Repository** para encapsular lógica de base de datos:
 
-```
-POST /order (con JWT)
-    ↓
-OrderService.createOrder()
-    ↓
-InventoryService.reserveStock() (disminuye stock)
-    ↓
-Si stock ≤ 5 → Emitir evento 'StockLow'
-Si stock = 0 → Emitir evento 'OutOfStock'
-    ↓
-Emitir evento 'OrderCreated'
-    ↓
-OrderCreatedConsumer registra + envía confirmación (TODO)
-```
+| Módulo | Por qué |
+|--------|---------|
+| `user` | Login, búsqueda con roles, múltiples relaciones |
+| `product` | Filtrado, productos por merchant |
+| `role` | Búsqueda por nombre/id |
 
-## Configuración
-
-Crear un archivo `.env` en la raíz del proyecto con las siguientes variables:
-
-```bash
-# Base de datos
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD=password
-DB_NAME=ecommerce
-
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRES_IN=1d
-
-# App
-PORT=3000
-```
+Otros módulos usan `EntityManager` directamente (operaciones CRUD simples).
 
 ## Estructura del Proyecto
 
 ```
 src/
-├── api/                    # Módulos de características
-│   ├── auth/              # Autenticación
-│   ├── inventory/         # Gestión de inventario
-│   ├── product/           # Gestión de productos
-│   ├── order/            # Gestión de pedidos
-│   ├── user/              # Gestión de usuarios
-│   └── role/              # Gestión de roles
+├── api/                    # Módulos
+│   ├── auth/              # Autenticación (login, register)
+│   ├── user/              # Usuarios
+│   ├── role/              # Roles
+│   ├── product/           # Productos
+│   ├── order/             # Pedidos
+│   └── notification/     # Notificaciones
 ├── common/
 │   └── helper/            # Utilidades compartidas
+├── config/                # Configuración de la app
+├── core/                  # EventEmitter, interceptors
 ├── database/
 │   ├── entities/          # Entidades TypeORM
-│   ├── migrations/        # Migraciones de BD
-│   └── seeders/              # Seeders de datos
-├── errors/                # Manejo de errores
-└── config/                # Configuración de la app
+│   ├── migrations/         # Migraciones
+│   ├── seeders/           # Seeds
+│   └── typeorm/           # Configuración TypeORM
+├── errors/                # Errores custom
+└── main.ts                # Entry point
 ```
 
-## Patrón Repository
+## Configuración
 
-Algunos módulos usan una **Capa Repository** para encapsular la lógica de base de datos, mientras otros usan `EntityManager` directamente. Esto es intencional.
-
-### Módulos CON Repository
-
-| Módulo    | Por qué?                                                            |
-| --------- | ------------------------------------------------------------------- |
-| `user`    | Consultas complejas: login, búsqueda de roles, búsqueda de usuarios |
-| `product` | Consultas complejas: filtrado, paginación, productos de merchant    |
-| `role`    | Mapeos rol-permisiones, múltiples joins                             |
-
-### Módulos SIN Repository
-
-| Módulo      | Por qué?                                                         |
-| ----------- | ---------------------------------------------------------------- |
-| `order`     | Operaciones simples: solo crear + actualizar status (cancelar)   |
-| `inventory` | Operaciones simples: solo actualizar cantidad (reservar/liberar) |
-
-**Rationale:** Si un módulo solo tiene operaciones CRUD simples (crear + actualizar), agregar una capa repository añade complejidad innecesaria. El uso directo de `EntityManager` en el servicio es suficiente.
-
-Cuándo agregar un Repository:
-
-- Consultas complejas con filtros, joins o paginación
-- Múltiples entidades involucradas
-- Lógica de query reutilizable entre endpoints
-- Transformaciones complejas de datos
-
-## Cómo Empezar
-
-Para empezar con este proyecto, seguí estos pasos:
-
-- Clonar el repositorio en tu máquina local.
-- Navegar al directorio del proyecto.
+Crear `.env` en `api/src/common/envs/`:
 
 ```bash
-cd ./nestjs-ecommerce
+# Database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_NAME=ecommerce
+DATABASE_USER=postgres
+DATABASE_PASSWORD=password
+
+# JWT
+JWT_SECRET=your-secret-key
+JWT_EXPIRES_IN=1d
+
+# Admin (para seeding)
+ADMIN_USER_EMAIL=admin@example.com
+ADMIN_USER_PASSWORD=Admin123!
+
+# App
+PORT=3000
 ```
 
-- Iniciar la base de datos postgres.
+## Cómo Levantar
 
 ```bash
+# Levantar PostgreSQL
 docker-compose up -d
-```
 
-- Instalar las dependencias de la app.
-
-```bash
+# Instalar dependencias
 npm install
-```
 
-- Ejecutar las migraciones de base de datos.
+# Crear archivo .env
+# (ver sección de configuración arriba)
 
-```bash
+# Ejecutar migraciones
 npm run migration:run
-```
 
-Si querés generar una migración futura
-
-```bash
-npm run migration:generate --name=<migrationName>
-```
-
-- Ejecutar los seeders de base de datos.
-
-```bash
+# Poblar datos iniciales
 npm run seed:run
-```
 
-- Iniciar la aplicación.
-
-```bash
+# Iniciar en desarrollo
 npm run start:dev
+
+# Iniciar en producción (Docker)
+docker build -t api .
+docker run -p 3000:3000 api
 ```
 
 ## Scripts
 
-| Comando                                       | Descripción                          |
-| --------------------------------------------- | ------------------------------------ |
-| `npm run build`                               | Compila TypeScript a JavaScript      |
-| `npm run lint`                                | Ejecuta ESLint con auto-fix          |
-| `npm run format`                              | Formatea código con Prettier         |
-| `npm run start:dev`                           | Inicia la app en modo watch          |
-| `npm run start:prod`                          | Ejecuta la app compilada             |
-| `npm run migration:run`                       | Ejecuta las migraciones pendientes   |
-| `npm run migration:generate -- --name=<name>` | Genera una nueva migración           |
-| `npm run seed:run`                            | Ejecuta los seeders de base de datos |
+| Comando | Descripción |
+|---------|------------|
+| `npm run build` | Compila TypeScript → JavaScript |
+| `npm run lint` | ESLint con auto-fix |
+| `npm run format` | Prettier |
+| `npm run start:dev` | Modo watch |
+| `npm run start:prod` | Producción |
+| `npm run migration:run` | Ejecutar migraciones |
+| `npm run migration:generate -- --name=nombre` | Generar migración |
+| `npm run seed:run` | Poblar base de datos |
+| `npm run test` | Tests |
+| `npm run test:cov` | Coverage |
 
-## Endpoints de la API
+## Endpoints
 
 ### Auth
-
-| Método | Endpoint         | Descripción       | Auth Requerida |
-| ------ | ---------------- | ----------------- | -------------- |
-| POST   | `/auth/login`    | Login de usuario  | No             |
-| POST   | `/auth/register` | Registrar usuario | No             |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/auth/login` | Login |
+| POST | `/auth/register` | Registro (con opción `role: "Customer" \| "Merchant"`) |
 
 ### User
-
-| Método | Endpoint        | Descripción                | Auth Requerida |
-| ------ | --------------- | -------------------------- | -------------- |
-| GET    | `/user/profile` | Obtener perfil del usuario | Sí             |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/user/profile` | Perfil del usuario (auth) |
 
 ### Role
-
-| Método | Endpoint       | Descripción           | Auth Requerida |
-| ------ | -------------- | --------------------- | -------------- |
-| POST   | `/role/assign` | Asignar rol a usuario | Sí (Admin)     |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/role/assign` | Asignar rol (admin) |
 
 ### Product
-
-| Método | Endpoint                | Descripción                  | Auth Requerida      |
-| ------ | ----------------------- | ---------------------------- | ------------------- |
-| GET    | `/product/:id`          | Obtener producto por ID      | No                  |
-| POST   | `/product/create`       | Crear nuevo producto         | Sí (Admin/Merchant) |
-| POST   | `/product/:id/details`  | Agregar detalles al producto | Sí (Admin/Merchant) |
-| POST   | `/product/:id/activate` | Activar producto             | Sí (Admin/Merchant) |
-| DELETE | `/product/:id`          | Eliminar producto            | Sí (Admin/Merchant) |
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/product` | Listar productos |
+| GET | `/product/:id` | Detalle de producto |
+| POST | `/product/create` | Crear producto (merchant) |
+| POST | `/product/:id/details` | Agregar detalles |
+| POST | `/product/:id/activate` | Activar producto |
+| DELETE | `/product/:id` | Eliminar producto |
 
 ### Order
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/order` | Listar pedidos (propios o todos si admin) |
+| POST | `/order` | Crear pedido |
+| PATCH | `/order/:id/cancel` | Cancelar pedido |
 
-| Método | Endpoint            | Descripción        | Auth Requerida |
-| ------ | ------------------- | ------------------ | -------------- |
-| POST   | `/order`            | Crear nuevo pedido | Sí             |
-| PATCH  | `/order/:id/cancel` | Cancelar pedido    | Sí             |
+### Notification
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/notification` | Notificaciones del usuario |
+| PATCH | `/notification/read/:id` | Marcar como leída |
+| PATCH | `/notification/read-all` | Marcar todas como leídas |
+
+## Swagger
+
+Documentación disponible en: `http://localhost:3000/api`
 
 ## Testing
 
-| Comando              | Descripción                 |
-| -------------------- | --------------------------- |
-| `npm test`           | Ejecuta todos los tests     |
-| `npm run test:watch` | Ejecuta tests en modo watch |
-| `npm run test:cov`   | Ejecuta tests con coverage  |
-| `npm run test:e2e`   | Ejecuta tests end-to-end    |
-
-Para ejecutar los tests, seguí estos pasos:
-
-1. Instalar dependencias: `npm install`
-2. Ejecutar los tests: `npm run test`
-
-## Documentación Swagger
-
-La documentación de la API está disponible en **http://localhost:3000/api**
-
-### Características de Swagger
-
-- Explorador interactivo de la API
-- Autenticación con Bearer token
-- Esquemas de request/response
-- Definiciones de modelos
-
-### Tags
-
-| Tag         | Módulo                |
-| ----------- | --------------------- |
-| `auth`      | Autenticación         |
-| `users`     | Gestión de usuarios   |
-| `products`  | Gestión de productos  |
-| `orders`    | Gestión de pedidos    |
-| `inventory` | Gestión de inventario |
-| `roles`     | Gestión de roles      |
-
-### Usando con JWT
-
-1. Login para obtener el token
-2. Hacer click en el botón **Authorize**
-3. Ingresar: `Bearer <tu-token>`
-
-### Ejemplo: Crear un Pedido
-
+```bash
+npm test              # Tests unitarios
+npm run test:watch    # Modo watch
+npm run test:cov      # Coverage
+npm run test:e2e      # End-to-end
 ```
-POST /order
-Authorization: Bearer eyJhbGciOiJIUzI1...
-
-Body:
-{
-  "productVariationId": 1,
-  "countryCode": "AR",
-  "quantity": 2
-}
-```
-
-## Agregar Nuevos Eventos
-
-Para agregar un nuevo evento al sistema:
-
-1. **Crear definición del evento** en `src/api/{module}/events/{event-name}.event.ts`
-
-2. **Crear consumidor** en `src/api/{module}/consumers/{event-name}.consumer.ts`
-
-3. **Registrar en el módulo** - Agregar EventEmitter y Consumidor a los providers del módulo
-
-4. **Emitir desde el servicio** - Llamar a `eventEmitter.emit()` después de que la acción se complete
-
-Ver `docs/EVENTOS.md` para instrucciones detalladas.
-
-## Contribuir
-
-Si estás interesado en contribuir a este proyecto, por favor seguí estas guías:
-
-1. Fork del repositorio
-2. Hacer tus cambios
-3. Enviar un pull request
