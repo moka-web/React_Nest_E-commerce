@@ -73,7 +73,6 @@ client/src/
 |--------|-----|
 | **Repository** | Módulos con consultas complejas: `user`, `product`, `role` |
 | **Event Emitter** | Desacoplamiento de lógica secundaria (notificaciones) |
-| **Context API** | Estado global: `AuthContext`, `CartContext`, `NotificationContext` |
 
 ### Modelo de Datos (Roles)
 
