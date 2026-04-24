@@ -1,8 +1,8 @@
 # E-commerce Full Stack
 
-Aplicación web full stack de e-commerce construida con **Nest.js** (backend) y **React** (frontend).
+Aplicacion web full stack de e-commerce construida con **Nest.js** (backend) y **React** (frontend).
 
-## 🔗 Deploys
+## Links
 
 | Servicio | URL |
 |----------|-----|
@@ -10,15 +10,15 @@ Aplicación web full stack de e-commerce construida con **Nest.js** (backend) y 
 | **Backend** (Render) | https://react-nest-e-commerce-2.onrender.com |
 | **Swagger** (Docs API) | https://react-nest-e-commerce-2.onrender.com/api |
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnologico
 
 ### Backend
 - **Framework**: Nest.js 9.x
 - **Lenguaje**: TypeScript
 - **ORM**: TypeORM
 - **Base de datos**: PostgreSQL
-- **Autenticación**: JWT
-- **Documentación**: Swagger
+- **Autenticacion**: JWT
+- **Documentacion**: Swagger
 - **Testing**: Jest
 - **Contenedor**: Docker
 
@@ -30,7 +30,7 @@ Aplicación web full stack de e-commerce construida con **Nest.js** (backend) y 
 - **HTTP Client**: Axios
 - **Estilos**: CSS Modules
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ### Backend — Event-Driven Architecture
 
@@ -67,7 +67,7 @@ client/src/
 └── types/            # Tipos TypeScript
 ```
 
-### Patrones Implementados
+## Patrones Implementados
 
 | Patrón | Uso |
 |--------|-----|
@@ -146,7 +146,7 @@ PORT=3000
 VITE_API_URL=http://localhost:3000
 ```
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 React_Nest_E-commerce/
@@ -182,26 +182,26 @@ Para más detalles sobre cada parte del proyecto:
 - **[Documentación Backend](api/README.md)** — Arquitectura, endpoints, eventos, testing
 - **[Documentación Frontend](client/README.md)** — Estructura, componentes, servicios
 
-## 🔐 Roles y Permisos
+## Permisos por Rol
 
 | Acción | Customer | Merchant | Admin |
 |--------|----------|----------|-------|
-| Ver productos | ✅ | ✅ | ✅ |
-| Registrarse/Login | ✅ | ✅ | ✅ |
-| Crear productos | ❌ | ✅ | ✅ |
-| Ver pedidos propios | ✅ | ✅ | ✅ |
-| Crear pedidos | ✅ | ✅ | ✅ |
-| Ver todos los pedidos | ❌ | ❌ | ✅ |
-| Asignar roles | ❌ | ❌ | ✅ |
+| Ver productos | Si | Si | Si |
+| Registrarse/Login | Si | Si | Si |
+| Crear productos | No | Si | Si |
+| Ver pedidos propios | Si | Si | Si |
+| Crear pedidos | Si | Si | Si |
+| Ver todos los pedidos | No | No | Si |
+| Asignar roles | No | No | Si |
 
-## 📝 Notas de Desarrollo
+## Notas de Desarrollo
 
 - El backend corre migraciones automáticamente al iniciar (Docker)
 - Los seeders cargan datos iniciales (roles, categorías, colores, talles, monedas, países)
 - El frontend usa JWT para autenticación (token almacenado en localStorage)
 - El carrito se maneja con React Context y persiste en **localStorage**
 
-## 🤝 Contribuir
+## Contribuir
 
 1. Fork del repositorio
 2. Crear branch (`git checkout -b feature/nueva-funcionalidad`)
@@ -209,7 +209,7 @@ Para más detalles sobre cada parte del proyecto:
 4. Push (`git push origin feature/nueva-funcionalidad`)
 5. Abrir Pull Request
 
-## 🔮 Mejoras Futuras
+## Mejoras Futuras
 
 ### DevOps & Deploy
 - [ ] **CI/CD**: Configurar GitHub Actions para deploy automático en cada push a `main`
@@ -240,6 +240,6 @@ Para más detalles sobre cada parte del proyecto:
 - [ ] **Soft deletes**: Marcar registros como eliminados en lugar de borrarlos
 - [ ] **Migrations transaccionales**: Ejecutar migraciones con transacciones
 
-## 📄 Licencia
+## Licencia
 
 ISC
