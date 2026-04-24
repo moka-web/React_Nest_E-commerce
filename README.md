@@ -209,6 +209,37 @@ Para más detalles sobre cada parte del proyecto:
 4. Push (`git push origin feature/nueva-funcionalidad`)
 5. Abrir Pull Request
 
+## 🔮 Mejoras Futuras
+
+### DevOps & Deploy
+- [ ] **CI/CD**: Configurar GitHub Actions para deploy automático en cada push a `main`
+- [ ] **Preview Deployments**: Despliegues automáticos por PR en Vercel/Render
+- [ ] **Monitoreo**: Agregar logging (e.g., Datadog, Sentry)
+- [ ] **HTTPS forzado**: Redirigir HTTP → HTTPS
+
+### Backend
+- [ ] **Validación de stock**: Verificar disponibilidad antes de crear pedido
+- [ ] **Retry en consumers**: Reintentar eventos fallidos
+- [ ] **Rate limiting** por usuario (ya hay throttler, mejorar configuración)
+- [ ] **Cacheo**: Redis para datos frecuentemente consultados
+- [ ] **Upload de imágenes**: Subir fotos de productos a S3/Cloudinary
+- [ ] **Email**: Envío real de emails (bienvenida, confirmación de pedido)
+- [ ] **Testing E2E**: Agregar tests end-to-end
+
+### Frontend
+- [ ] **PWA**: Hacer la app instalable
+- [ ] **Búsqueda**: Filtros y búsqueda de productos
+- [ ] **Paginación**: Lista de productos con paginación
+- [ ] **Persistencia del carrito**: Integrar con API para persistir en backend
+- [ ] **Dark mode**: Toggle de tema
+- [ ] **Testing**: Agregar tests unitarios con Vitest
+- [ ] **Lazy loading**: Carga perezosa de rutas
+
+### Base de Datos
+- [ ] **Índices optimizados**: Agregar índices en columnas consultadas frecuentemente
+- [ ] **Soft deletes**: Marcar registros como eliminados en lugar de borrarlos
+- [ ] **Migrations transaccionales**: Ejecutar migraciones con transacciones
+
 ## 📄 Licencia
 
 ISC
