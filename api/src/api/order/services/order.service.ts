@@ -89,4 +89,23 @@ export class OrderService {
 
     return order;
   }
+
+  /**
+   * Lista todos los pedidos
+   */
+  async findAll(): Promise<Order[]> {
+    return this.entityManager.find(Order, {
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Lista pedidos de un usuario
+   */
+  async findByUser(userId: number): Promise<Order[]> {
+    return this.entityManager.find(Order, {
+      where: { userId },
+      order: { createdAt: 'DESC' },
+    });
+  }
 }

@@ -25,4 +25,22 @@ export const authService = {
   logout() {
     localStorage.removeItem('token');
   },
+
+  getCurrentUser(): User | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        id: payload.sub,
+        email: payload.email,
+        roleId: payload.roleId,
+        isActive: payload.isActive,
+        createdAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString(),
+        updatedAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString(),
+      };
+    } catch {
+      return null;
+    }
+  },
 };

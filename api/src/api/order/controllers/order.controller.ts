@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Patch,
+  Get,
   Param,
   Body,
   UseGuards,
@@ -60,6 +61,18 @@ export class OrderController {
       body.countryCode,
       body.quantity,
     );
+  }
+
+  @ApiOperation({
+    summary: 'Get all orders',
+    description: 'Returns all orders for the authenticated user',
+  })
+  @ApiResponse({ status: 200, description: 'Orders retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get()
+  async findAll(@Req() req: any) {
+    const userId = req.user?.id;
+    return this.orderService.findByUser(userId);
   }
 
   @ApiOperation({
