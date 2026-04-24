@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  IsOptional,
   MinLength,
   Matches,
 } from 'class-validator';
@@ -40,6 +41,7 @@ export class CreateUserDto {
     description: 'User role: Customer or Merchant',
     required: false,
   })
+  @IsOptional()
   @IsString()
   public role?: string;
 }
