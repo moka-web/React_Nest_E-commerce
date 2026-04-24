@@ -30,6 +30,10 @@ RUN npm ci --only=production && npm cache clean --force
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+
+# Copy init script
+COPY init.sh ./
 
 # Set ownership to non-root user
 RUN chown -R nestjs:nodejs /app
@@ -44,8 +48,8 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
-# Start the application
-CMD ["node", "dist/main"]
+# Start the application (runs migrations first)
+CMD ["sh", "init.sh"]
 
 # Allow PORT to be overridden by environment variable
 ENV PORT=3000
