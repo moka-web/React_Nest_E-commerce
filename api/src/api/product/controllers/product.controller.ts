@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -11,7 +11,6 @@ import { RoleIds } from '../../role/enum/role.enum';
 import { CreateProductDto, ProductDetailsDto } from '../dto/product.dto';
 import { ProductService } from '../services/product.service';
 import { Auth } from 'src/api/auth/guards/auth.decorator';
-import { FindOneParams } from 'src/common/helper/findOneParams.dto';
 import { CurrentUser } from 'src/api/auth/guards/user.decorator';
 import { User } from 'src/database/entities/user.entity';
 
@@ -39,8 +38,8 @@ export class ProductController {
   @ApiResponse({ status: 200, description: 'Product retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Product not found' })
   @Get(':id')
-  async getProduct(@Param() product: FindOneParams) {
-    return this.productService.getProduct(product.id);
+  async getProduct(@Param('id', ParseIntPipe) id: number) {
+    return this.productService.getProduct(id);
   }
 
   @Auth(RoleIds.Admin, RoleIds.Merchant)
@@ -78,11 +77,11 @@ export class ProductController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   @Post(':id/details')
   async addProductDetails(
-    @Param() product: FindOneParams,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: ProductDetailsDto,
     @CurrentUser() user: User,
   ) {
-    return this.productService.addProductDetails(product.id, body, user.id);
+    return this.productService.addProductDetails(id, body, user.id);
   }
 
   @Auth(RoleIds.Admin, RoleIds.Merchant)
@@ -100,10 +99,10 @@ export class ProductController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   @Post(':id/activate')
   async activateProduct(
-    @Param() product: FindOneParams,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ) {
-    return this.productService.activateProduct(product.id, user.id);
+    return this.productService.activateProduct(id, user.id);
   }
 
   @Auth(RoleIds.Admin, RoleIds.Merchant)
@@ -116,9 +115,9 @@ export class ProductController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   @Delete(':id')
   async deleteProduct(
-    @Param() product: FindOneParams,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ) {
-    return this.productService.deleteProduct(product.id, user.id);
+    return this.productService.deleteProduct(id, user.id);
   }
 }
