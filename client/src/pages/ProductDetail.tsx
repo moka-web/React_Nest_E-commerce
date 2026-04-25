@@ -14,11 +14,17 @@ export function ProductDetail() {
   const { addItem } = useCart();
 
   useEffect(() => {
+    if (!id) {
+      setError('Producto no encontrado');
+      setLoading(false);
+      return;
+    }
     productService
       .getById(Number(id))
       .then(setProduct)
       .catch(() => setError('Error al cargar producto'))
       .finally(() => setLoading(false));
+      
   }, [id]);
 
   const handleAddToCart = () => {
